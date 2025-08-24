@@ -23,8 +23,6 @@ C++ / JavaScript / Python의 영향을 받음
 - **ABI (Application Binary Interface)** : 앱에서 컨트랙트 함수를 어떻게 호출할지 정의한 JSON 인터페이스
 
 
-==============================
-
 
 # $$EVM$$
 
