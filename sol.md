@@ -19,8 +19,8 @@ C++ / JavaScript / Python의 영향을 받음
 - **EVM (Ethereum Virtual Machine)** 위에서 동작
 
 ## 컴파일 산출물
-- **Bytecode** : EVM이 실행하는 저수준 코드  
-- **ABI (Application Binary Interface)** : 앱에서 컨트랙트 함수를 어떻게 호출할지 정의한 JSON 인터페이스
+- **Bytecode** : Solidity로 작성된 코드를 컴파일한 EVM 전용 실행 코드 (블록체인에 실제 배포됨)  
+- **ABI (Application Binary Interface)** : 외부에서 이 컨트랙트의 함수를 호출할 때 어떤 버튼을 눌러야 하는지 알려주는 JSON 파일
 <br><br><br><br><br>
 # $$EVM$$
 
@@ -43,12 +43,103 @@ C++ / JavaScript / Python의 영향을 받음
 - 스택과 메모리를 읽고 쓰며, 상태 변경은 `SSTORE`로 storage에 기록  
 - 실행이 끝나면 `STOP` / `RETURN` / `REVERT` 등으로 종료  
 - 소비된 가스를 정산
+<br><br><br><br><br>
+# $$variable$$
 
-## 컴파일 산출물
-- **Bytecode** : Solidity로 작성된 코드를 컴파일한 EVM 전용 실행 코드 (블록체인에 실제 배포됨)  
-- **ABI (Application Binary Interface)** : 외부에서 이 컨트랙트의 함수를 호출할 때 어떤 버튼을 눌러야 하는지 알려주는 JSON 파일
+## 변수의 종류
+1. **State Variables(상태변수)**  
+    - 함수 바깥(컨트랙트 안)에 선언되는 변수로,블록체인의 영구 저장소(storage)에 기록되는 변수
+    - 함수 외부, 컨트랙트 본문 안에 선언
+    - 컨트랙트가 배포될 때 초기화
+    - 트랜잭션이 실행되면 값이 업데이트되고 영구 기록
+    - storage 영역에 저장되므로 가스비가 발생
+2. **Local Variables(지역변수)**
+    - 함수 안에서 선언되는 변수로, 함수가 실행되는 동안만 존재하고 블록체인에 저장되지 않는 변수
+    - memory에 저장되며, 일시적인 임시 변수
+    - 함수 실행이 끝나면 자동으로 사라짐
+    - 값을 외부에서 조회하거나 추적할 수 없음
+3. **Global Variables(전역변수)**
+    - Solidity에서 자동으로 제공되는 내장 변수
+    - 블록체인 또는 트랜잭션의 정보를 함수 내에서 어디서든 사용 가능
+    - msg, block, tx 같은 객체나 키워드를 통해 접근
+
+## 저장소의 종류
+1. **storage**
+    - 컨트랙트의 상태 변수들이 저장되는 공간으로, 블록체인에 영구히 저장(key–value 구조)
+    - State Variables(상태변수)에 해당
+    - 가스 비용이 가장 큼
+2. **memory**
+    - 임시 참조 타입 저장 공간
+    - 함수 실행 중에만 존재
+    - 함수 실행 중 임시로 사용하는 저장공간(읽고 쓰기 가능)
+    - EVM이 동작할 때만 존재하고, 실행이 끝나면 사라짐
+3. **calldata**
+    - 외부 함수에 전달된 입력 값이 저장되는 읽기 전용 공간
+    - external 함수에서만 사용 가능
+4. **stack**
+    - EVM 연산의 중심, EVM이 연산할 때 사용하는 임시 저장 공간(LIFO)
+    - 1024개의 32바이트 슬롯
+    - 함수 실행 중에만 존재
+    - 변수 이름 없이 내부적으로 사용
+<br><br><br><br><br>
+# $$Data Type(자료형)$$
+
+## Data Type  
+- 변수에 어떤 종류의 값이 들어갈 수 있는지 정의하는 것
+- Solidity는 정적 타입 언어라서, 모든 변수 선언 시 자료형을 반드시 명시해야함
+
+## Value Type
+- 변수에 실제 값 자체가 저장되는 타입
+- 할당하거나 함수에 넘기면 값이 복사
+- 원본과 복사본은 서로 영향을 주지 않음
+- EVM의 stack에 저장
+
+## Value Type Example
+1. uint / int
+    - 정수를 저장
+    - 내부적으로 EVM은 256비트 연산 유닛을 사용하기 때문에, uint256이 기본
+    - uint8, uint16 등은 Solidity 레벨에서만 구분되고, EVM에선 256비트로 패딩
+2. bool 
+    - true, flase 를 저장
+    - 0 --> false, 그 외 모든 값 --> true
+3. address
+    - 이더리움 블록체인의 계정(EOA / CA)을 식별하기 위한 20바이트 값
+    - 이더 송금, 컨트랙트 호출, msg.sender 비교 등 여러가지 역할을 수행함
+4. bytes(1~32)
+    - 고정 길이(1bytes ~ 32bytes) 바이트 배열
+5. enum
+    - 열거형(enumeration) 자료형으로, 여러 개의 이름 있는 상수값을 0부터 자동으로 번호를 부여한 정수 상수 집합
 
 
+## Reference Type
+- 변수에 값의 주소(참조)만 저장되는 타입
+- 변수는 그 위치를 가리키기만 함
+- 값을 대입하거나 인자로 넘길 때 주소(참조)만 복사
+- 참조 타입은 선언 시 어디에 저장할지를 반드시 명시해야 함
 
----
+## Reference Type Example
+1. bytes
+    - 가변 길이 바이트 배열
+    - 길이가 유동적이기 때문에 스택에 직접 넣을 수 없음, 변수에는 메모리 주소(참조)만 저장되고 실제 데이터는 memory / storage / calldata에 저장됨
+2. string
+    - UTF-8로 인코딩된 문자들의 가변 길이 배열
+    - 내부적으로는 사실상 bytes의 별칭(alias)이며, 기술적으로는 bytes와 동일한 구조를 가짐
+<br><br><br><br><br>
+# $$Visibility Specifiers(가시성 지정자)$$
 
+## public
+1. 외부/내부 어디서든 호출 가능(누구나 접근 가능)
+2. Solidity가 자동으로 getter 함수도 생성해줌 (변수일 경우)
+
+## external
+1. 외부 컨트랙트/계정에서만 호출 가능(외부 전용 함수)
+2. 내부에서는 직접 호출 불가능 (call by this로는 가능)
+
+## internal
+1. 현재 컨트랙트와 이를 상속한 자식 컨트랙트에서만 접근 가능
+2. 외부 컨트랙트나 계정에서는 접근 불가능
+3. state variable은 default로 internal 선언
+
+## private
+1. 오직 선언한 컨트랙트 안에서만 접근 가능
+2. 상속받은 자식 컨트랙트에서도 접근 불가
