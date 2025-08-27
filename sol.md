@@ -21,7 +21,9 @@ C++ / JavaScript / Python의 영향을 받음
 ## 컴파일 산출물
 - **Bytecode** : Solidity로 작성된 코드를 컴파일한 EVM 전용 실행 코드 (블록체인에 실제 배포됨)  
 - **ABI (Application Binary Interface)** : 외부에서 이 컨트랙트의 함수를 호출할 때 어떤 버튼을 눌러야 하는지 알려주는 JSON 파일
+
 <br><br><br><br><br>
+
 # $$EVM$$
 
 ## 정의
@@ -43,7 +45,9 @@ C++ / JavaScript / Python의 영향을 받음
 - 스택과 메모리를 읽고 쓰며, 상태 변경은 `SSTORE`로 storage에 기록  
 - 실행이 끝나면 `STOP` / `RETURN` / `REVERT` 등으로 종료  
 - 소비된 가스를 정산
+
 <br><br><br><br><br>
+
 # $$variable$$
 
 ## 변수의 종류
@@ -81,7 +85,9 @@ C++ / JavaScript / Python의 영향을 받음
     - 1024개의 32바이트 슬롯
     - 함수 실행 중에만 존재
     - 변수 이름 없이 내부적으로 사용
+
 <br><br><br><br><br>
+
 # $$Data Type(자료형)$$
 
 ## Data Type  
@@ -124,22 +130,125 @@ C++ / JavaScript / Python의 영향을 받음
 2. string
     - UTF-8로 인코딩된 문자들의 가변 길이 배열
     - 내부적으로는 사실상 bytes의 별칭(alias)이며, 기술적으로는 bytes와 동일한 구조를 가짐
+3. array
+    - 정적 또는 가변 길이의 값들의 연속된 모음
+    - 데이터가 저장되는 위치(storage/memory/calldata)를 명시해야 함
+4. struct
+    - 사용자 정의 자료구조
+    - 여러 개의 다른 타입 값을 하나의 구조체로 묶은 복합 데이터 타입
+    - 전체 구조체를 다룰 때는 참조로 처리되며, 저장 위치를 명시해야 함
+5. mapping
+    - 키 --> 값 형태로 데이터를 저장하는 해시 테이블
+    - 항상 storage에만 존재 가능 (함수에서 memory나 calldata로 전달 불가능)
+    - 키는 값 타입만 가능, 값은 어떤 타입이든 가능
+
 <br><br><br><br><br>
+
 # $$Visibility Specifiers(가시성 지정자)$$
 
 ## public
-1. 외부/내부 어디서든 호출 가능(누구나 접근 가능)
-2. Solidity가 자동으로 getter 함수도 생성해줌 (변수일 경우)
+- 외부/내부 어디서든 호출 가능(누구나 접근 가능)
+- Solidity가 자동으로 getter 함수도 생성해줌 (변수일 경우)
 
 ## external
-1. 외부 컨트랙트/계정에서만 호출 가능(외부 전용 함수)
-2. 내부에서는 직접 호출 불가능 (call by this로는 가능)
+- 외부 컨트랙트/계정에서만 호출 가능(외부 전용 함수)
+- 내부에서는 직접 호출 불가능 (call by this로는 가능)
 
 ## internal
-1. 현재 컨트랙트와 이를 상속한 자식 컨트랙트에서만 접근 가능
-2. 외부 컨트랙트나 계정에서는 접근 불가능
-3. state variable은 default로 internal 선언
+- 현재 컨트랙트와 이를 상속한 자식 컨트랙트에서만 접근 가능
+- 외부 컨트랙트나 계정에서는 접근 불가능
+- state variable은 default로 internal 선언
 
 ## private
-1. 오직 선언한 컨트랙트 안에서만 접근 가능
-2. 상속받은 자식 컨트랙트에서도 접근 불가
+- 오직 선언한 컨트랙트 안에서만 접근 가능
+- 상속받은 자식 컨트랙트에서도 접근 불가
+
+<br><br><br><br><br>
+
+# $$Modifier(모디파이어)$$
+
+## Pure
+- 순수 함수(pure function)를 의미하며, 상태(state)에 전혀 의존하지 않고 오직 입력값만으로 동작하는 함수(블록체인 상태, 상태 변수, 전역 변수 등과 완전히 독립적)
+- 상태 변수 읽기 / 쓰기 불가능
+- 블록 관련 전역 변수 접근 불가능
+- this, address(this) 호출 불각능
+- 입력값과 내부 계산만 허용 
+
+## View
+- 블록체인의 상태(state)를 읽기만 하고 변경하지 않는 함수
+- 상태 변수나 블록 정보에 접근(read) 은 가능하지만, 수정(write) 은 불가능
+- view 함수에서 pure 함수 호출 가능
+
+## non-view, non-pure --> General
+- 상태 변수를 읽거나 쓸 수 있고, 블록체인의 상태를 변경할 수 있는 함수
+
+<br><br><br><br><br>
+
+# $$Function\&Parameter$$
+
+## Function
+- 특정한 작업을 수행하기 위한 코드 블록
+- 스마트컨트랙트의 행동(behavior)을 정의하며, 입력값(parameter)을 받아 처리하고, 출력값(return value)을 반환하거나 상태를 변경
+- 재사용성: 동일한 작업을 반복할 때 함수로 만들어 쉽게 호출
+- 분리와 구조화: 로직을 명확하게 나누고 가독성을 높임
+
+## Parameter
+- 함수에 전달되는 입력값(인자)의 이름과 자료형을 지정하는 변수
+- 함수 내부에서 변수처럼 사용
+
+<br><br><br><br><br>
+
+# $$Mapping$$
+
+## Mapping
+- "키(key) --> 값(value)"을 효율적으로 저장하고 빠르게 조회할 수 있는 해시 테이블 기반 자료구조(JavaScript의 object)
+- mapping(KeyType => ValueType) mappingName; 이런식으로 선언 함
+- non-iterable(for문으로 key 순회 불가능)
+- 키 존재 여부 확인 불가능(존재하지 않는 key를 조회하면 default value를 반환)
+- 함수 파라미터로 전달 불가
+- 모든 mapping은 반드시 storage에 존재
+- delete를 이용해서 값 삭제
+
+## nested mapping
+- mapping의 값(ValueType)으로 또 다른 mapping을 사용하는 자료구조
+- mapping(address => mapping(uint => bool)) public voted;  
+voted[msg.sender][proposalId]  
+voted[주소][제안ID] = true --> 투표 완료
+
+<br><br><br><br><br>
+
+# $$Array$$
+
+- 같은 타입의 데이터를 연속적으로 저장하는 자료구조
+- 정적 배열: 길이가 고정됨(컴파일 타임에 크기 결정)
+- 동적 배열: 길이가 유동적(추가/삭제 가능)
+- push: 배열 끝에 값 추가(동적 배열만 가능)
+- pop: 배열 맨 끝 요소 제거(동적 배열만 가능)
+- delete arr[index]: 특정 인덱스 초기화 (길이는 그대로)
+- delete arr: 전체 배열 초기화 (길이도 0)
+- length: 배열 길이 조회
+- storage --> storage: 참조 복사
+- storage --> memory: 값 복사
+- memory --> memory: 값 복사
+
+<br><br><br><br><br>
+
+# $$Object-Oriented Programming(OOP)$$
+
+## Event
+- 컨트랙트에서 외부로 발생을 알리는 메시지
+- 이벤트 핸들러(리스너)에게 상태 변화나 특정 동작의 발생을 전달하는 메커니즘
+- 발생자(emitter)와 구독자(listener) 사이의 느슨한 연결(loose coupling)을 위한 구조
+- 블록체인에 로그 형태로 기록됨
+- 가스 비용 저렴(storage write에 비해서)
+- indexed 키워드로 검색 최적화
+- 컨트랙트 내에서 직접 접근 불가(off-chain 용도)
+
+## Constructor
+- 스마트 컨트랙트가 처음 배포될 때 딱 한 번 실행되는 함수
+- 호출자: 배포자 (msg.sender)
+- 상태 변수 초기화, 권한 설정
+
+## Immutable
+- 변수 선언 시 constructor에서 한 번만 설정 가능하고,
+그 이후에는 절대 변경될 수 없는 변수를 만드는 키워드
