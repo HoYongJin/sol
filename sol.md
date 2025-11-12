@@ -9,6 +9,91 @@
   - 동작 방식
   - 컴파일 산출물
 
+# $$Ethereum$$
+
+## 창시 동기
+비트코인이 블록체인의 잠재력을 완전히 활용하지 못하며 , 중앙화된 플랫폼 독점을 탈피하여 영구적인 개인 데이터 소유권 을 구현하려는 목적에서 출발
+
+## 핵심 혁신
+비트코인의 화폐 기능에 튜링 완전성(Turing-Completeness) 을 갖춘 스마트 컨트랙트 기능을 추가
+
+## 개발 언어
+객체지향 및 정적 타입 언어인 솔리디티(Solidity) 가 EVM을 타겟으로  설계
+
+## World Computer
+- programmable blockchain: 사용자가 복잡성을 직접 프로그래밍할 수 있는 퍼블릭 블록체인
+- State Consensus: 트워크의 모든 노드가 EVM을 통해 동일한 연산을 수행함으로써 동일한 전역 상태(state)에 합의하는 아키텍처
+
+## The Merge
+기존의 작업증명(PoW)에서 지분증명(PoS) 컨센서스 알고리즘으로 전환
+
+## Distributed Computing
+- transaction based state machine: 현재 상태는 오직 트랜잭션의 실행을 통해서만 다음 상태로 전이
+- 데이터 중복성: 모든 노드가 코드 및 데이터 전체의 복사본을 가지며 상호 연결되어 중앙 권한 이나 제3자의 간섭 없이  애플리케이션 실행을 보장
+
+## DApp Architecture
+- Client-side
+1. Dapp Web Browser를 통해 DApp과 상호작용
+2. HTML/CSS/Javascript로 구성되며, 핵심적으로 Web3.js라이브러리(자바스크립트가 이더리움 블록체인과 통신할 수 있도록 하는 핵심 인터페이스)를 포함
+- RPC
+1. 프론트엔드(Web3.js)는 RPC 통신을 통해 로컬 또는 원격 이더리움 노드에 연결
+2. DApp이 블록체인에 데이터를 읽거나(Read) 트랜잭션을 전송(Write)하는 표준 통신 규약
+- Decentralized Server
+1. 전통적인 아키텍처(Web2)의 "database/cache and server code" 를 EVM과 블록체인이 대체
+2. EVM (Ethereum Virtual Machine): 스마트 컨트랙트가 실행되는 런타임 환경입니다. DApp의 비즈니스 로직(Logic)을 처리
+3. Blockchain: 모든 트랜잭션과 컨트랙트의 상태(State)가 영구적으로 저장되는 분산 원장(데이터베이스)
+- Limitation
+1. 이 모델에서 DApp과 상호작용을 원하는 모든 사용자는 이더리움 풀 노드(Full Node)를 직접 운영해야함
+2. 막대한 저장 공간과 컴퓨팅 자원을 요구하므로 일반 사용자에게는 비현실적
+--> 제3자에 대한 신뢰가 전혀 필요 없는 '완전한 비신뢰(Trustless)' 환경을 구현
+- Solution
+1. Hosted Nodes: Infura, Alchemy와 같은 노드 제공자(Node Provider)가 풀 노드를 운영하고, 개발자에게 RPC 엔드포인트를 서비스로 제공
+2. MetaMask: 브라우저 지갑(복잡성을 추상화하는 핵심 도구)
+--> 사용자는 풀 노드를 직접 운영하지 않고도 DApp과 상호작용
+
+## DApp의 3가지 핵심 요소
+- Database(Blockchain): 네트워크의 모든 트랜잭션을 저장하는 불변의 DB
+- Code(Solidity): 애플리케이션의 비즈니스 로직(스마트 컨트랙트)
+- EVM 코드를 EVM이 실행할 수 있는 저수준의 바이트코드(Bytecode)로 컴파일하며, 이 바이트코드를 블록체인에 배포
+
+<br><br><br><br><br>
+
+# $$EVM$$
+
+## Def
+- 스마트 컨트랙트의 배포와 실행을 담당하는 런타임 환경(Runtime Environment)
+- transaction-based state machine: 이더리움의 전역 상태(모든 계정 잔액, 컨트랙트 스토리지 등)가 오직 트랜잭션의 실행을 통해서만 다음 상태로 전이(transition)될 수 있음
+- EVM은 바로 상태 전이를 계산하고 실행하는 엔진
+
+## Architecture
+- Sandbox: 실행 중인 스마트 컨트랙트가 EVM 외부의 네트워크, 파일 시스템 또는 다른 프로세스에 "접근하지 않는다" 는 것을 의미
+- Stack-based Machine: 솔리디티 코드가 컴파일되면 "바이트코드" 가 생성되며, EVM은 이 바이트코드를 순차적으로 처리
+
+## Purpose
+- Deterministic Execution: 
+- Distributed Consensus: 
+- State Veify: 
+
+## Execution Lifecycle
+- Compile: 솔리디티(Solidity) 같은 고수준 언어로 코드를 작성하면, 컴파일러는 이를 EVM이 이해할 수 있는 EVM 바이트코드(Bytecode)로 변환
+- Deploy: 랜잭션을 통해 이더리움 블록체인에 배포
+- Execute: 트랜잭션을 통해 특정 컨트랙트의 함수를 호출하면, 네트워크의 모든 노드는 해당 컨트랙트의 바이트코드를 EVM에서 실행
+- Opcode 처리: 바이트코드를 "작업(operation)" 단위로 읽어 들임
+- Excution Loop: 프로그램 카운터(PC)를 0부터 시작하여, Opcode를 하나씩 반복적으로 수행(명시적 종료 명령을 만나거나, 오류가 발생할 때 까지)
+- Gas: 모든 Opcode 미리 정의된 가스 비용을 가지며, EVM은 명령을 실행할 때마다 트랜잭션 발신자가 지불한 가스에서 해당 비용을 차감
+
+## Data 
+- Storage: 컨트랙트의 장기 저장소이자 영구적인 키/값 저장소(컨트랙트의 '상태(State)'를 저장하는 유일한 비휘발성 공간)
+- Memory: 임시(휘발성) 저장 공간(복잡한 데이터 처리(예: 함수 내 연산, 다른 컨트랙트 호출 시 인자 전달)에 사용)
+- Stack: 연산을 수행하기 위한 가장 기본적인 임시 공간(실행이 끝나면 사라)
+
+## ABI(Application Binary Interface)
+- JSON 형식으로 정의
+- EVM 외부의 애플리케이션이 컨트랙트의 함수를 호출하고 데이터를 다시 가져오는 법에 대한 표준 체계를 정의한 인터페이스
+- 함수 호출을 EVM이 이해할 수 있는 저수준 바이트코드(트랜잭션 데이터)로 어떻게 인코딩(encoding)하고, EVM이 반환한 결과를 어떻게 디코딩(decoding)할지 알려주는 통신 규약
+
+<br><br><br><br><br>
+
 # $$Solidity$$
 
 ## 정의
@@ -18,37 +103,7 @@ C++ / JavaScript / Python의 영향을 받음
 ## 실행 환경
 - **EVM (Ethereum Virtual Machine)** 위에서 동작
 
-## 컴파일 산출물
-- **Bytecode** : Solidity로 작성된 코드를 컴파일한 EVM 전용 실행 코드 (블록체인에 실제 배포됨)  
-- **ABI (Application Binary Interface)** : 외부에서 이 컨트랙트의 함수를 호출할 때 어떤 버튼을 눌러야 하는지 알려주는 JSON 파일
-
-<br><br><br><br><br>
-
-# $$EVM$$
-
-## 정의
-1. **스택 기반 가상머신**  
-   노드가 트랜잭션을 검증할 때 EVM이 동일한 바이트코드를 결정론적으로 실행
-2. **데이터 영역 구분**  
-   - storage (영구 저장소)  
-   - memory (일시적 저장소)  
-   - calldata (읽기 전용 입력)
-3. **가스 시스템**  
-   실행 비용을 가스로 측정하여 무한 루프 및 자원 남용을 방지
-
-## 필요성
-“누가 어디서 실행해도 결과가 동일”해야 합의가 가능하기 때문.  
-만약 OS/CPU마다 다른 결과가 나오면 블록체인이 깨짐
-
-## 동작 방식
-- 트랜잭션이 들어오면 EVM은 **opcode (ADD, SLOAD, SSTORE, CALL …)** 단위로 실행  
-- 스택과 메모리를 읽고 쓰며, 상태 변경은 `SSTORE`로 storage에 기록  
-- 실행이 끝나면 `STOP` / `RETURN` / `REVERT` 등으로 종료  
-- 소비된 가스를 정산
-
-<br><br><br><br><br>
-
-# $$variable$$
+# $$Variable$$
 
 ## 변수의 종류
 1. **State Variables(상태변수)**  
