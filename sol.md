@@ -248,7 +248,92 @@ voted[주소][제안ID] = true --> 투표 완료
 - 스마트 컨트랙트가 처음 배포될 때 딱 한 번 실행되는 함수
 - 호출자: 배포자 (msg.sender)
 - 상태 변수 초기화, 권한 설정
+- 모든 인스턴스가 동일
 
 ## Immutable
 - 변수 선언 시 constructor에서 한 번만 설정 가능하고,
 그 이후에는 절대 변경될 수 없는 변수를 만드는 키워드
+- 생성자에서 인스턴스별로 확정
+
+## Abstraction
+- 각 객체에 대해 시스템에서 반드시 필요한 상태(state)와 행위(behavior)를
+추출하는 것
+- 중요하거나 관심있는 부분만 포함하여 표현 
+- 동일한 대상에 대해 관점(perspective)에 따라 abstraction 결과가 달라짐
+- 유무형의 모든 것들이 객체로 abstraction 가능함
+- Class: A definition of a set of objects with similar
+- Object(Instance): has instantized states and behaviors(All objects are instances of some class)
+- abstract contract
+- interface
+
+## Inheritance
+- 기존에 정의된 계약(부모/상위)의 코드와 기능을 새로운 계약(자식/하위)이 물려받는 것
+- 코드 재사용, 기능 확장, 다형성(polymorphism) 구현
+- Child는 Parent의 모든 public 및 internal 함수, 상태변수를 자동 상속
+- private은 상속되지 않음
+- 부모 컨트랙트가 생성자 constructor를 가지고 있다면, 자식 컨트랙트는 생성자에서 명시적으로 호출해줘야 함
+
+## Encapsulation
+- 객체의 데이터(상태)와 동작(메서드)를 하나의 단위(객체)로 묶고, 외부에서의 직접 접근을 제한하며, 오직 허용된 인터페이스(함수)를 통해서만 접근하도록 만드는 원칙 
+- 객체 지향의 가장 핵심적인 개념
+- Visibility Modifiers(private, internal, public, external)를 통해서 구현
+- 무결성 유지: 상태변수를 마음대로 수정 못 하도록 제한
+- 유지보수성 향상: 인터페이스만 신경 쓰면 되므로 내부 구현 자유롭게 변경 가능
+- 보안 강화: 외부에서 상태를 훼손하지 못하게 차단
+- 상태 변수는 기본적으로 private 또는 internal로 설정
+- 함수 접근 제어는 onlyOwner, require(...) 같은 접근 제한자(Access Control) 와 결합
+- 최소화: 외부에서 필요한 기능만 공개, 나머지는 모두 숨김
+- 무변경: 외부에 공개되는 부분은 향후 변경되지 않도록 최대한 일반화해서 정의함
+- 각 object가 모듈(module)화 되어 독립적으로 구현될 수 있으므로 코드
+간의 의존성이 획기적으로 감소
+
+## Polymorphism
+- 같은 함수 이름이지만, 다른 컨트랙트나 타입에서 다른 방식으로 동작할 수 있도록 허용
+- one interface, multiple implementations
+- operation overriding(inheritance) + dynamic binding을 통해 구현
+- Class 차원의 encapsulation을 구현한 구조
+- Superclass가 subclass들을 encapsulation함 
+- 부모 타입으로 선언된 참조가 자식 인스턴스를 가리킬 수 있음(반대는 불가능)
+
+## Overriding
+- 부모의 기능을 자식이 재정의
+- 다형성(Polymorphism)을 구현하고, 이는 동적 디스패치(Dynamic Dispatch)를 통해 이루어짐
+- 실행 시점(Runtime)에 어떤 함수를 호출할지 결정하여 코드의 유연성과 확장성을 극대화
+- 부모 컨트랙트 타입으로 선언된 변수가 실제로는 자식 컨트랙트 인스턴스를 가리킬 때, 해당 자식 컨트랙트에서 재정의된 함수를 정확히 호출
+- Parameters, Return Values: 반드시 동일
+- Visibility Specifiers: 같거나 더 넓게(private < internal < public)
+- Mutability Specifiers: 같거나 더 엄격하게(payable<non-payable<view<pure)
+
+## Overloading
+- 함수 이름은 같지만 파라미터(매개변수)의 개수나 타입을 다르게 해서 여러 버전의 함수를 만드는 것
+- 함수 선택자(Function Selector)이며, 이는 정적 디스패치(Static Dispatch)를 통해 이루어짐
+- 어떤 함수를 호출할지는 컴파일 시점(Compile-time)에 결정
+- Return Values는 구분 기준으로 사용되지 않음(Parameters는 같은데 Return Values만 다르다면 오버로딩이 아님)
+- Visibility, Mutability Specifiers: 독립적(제약없음)
+
+## Abctract Contract
+- 미완성된 설계도
+- 하나 이상의 함수가 구현되지 않았을 경우: 함수 시그니처만 선언되고 {}로 된 함수 본문이 없는 함수가 하나라도 있으면 그 컨트랙트는 자동으로 추상이됨
+- abstract 키워드를 명시적으로 사용한 경우(모든 함수가 구현되었더라도)
+- 직접 배포 불가
+- 상속을 통한 완성 자식 컨트랙트는 부모인 추상 컨트랙트의 모든 미구현 함수들을 반드시 구현(override)해야함
+
+## Interface
+- 컨트랙트가 외부에 제공해야 할 함수의 집합을 정의
+- 모든 함수는 미구현 상태여야함
+- 모든 함수는 반드시 external이어야함
+- 상태 변수를 선언할 수 없음
+- 생성자(Constructor)를 가질 수 없음
+- 다른 컨트랙트를 상속할 수 없음
+- 표준화 (Standardization): 동일한 방식으로 상호작용할 수 있게 해줌
+- 컨트랙트 상호작용: 컨트랙트의 전체 소스 코드를 알 필요 없이 인터페이스와 주소만 있으면 상호작용 가능
+- 컨트랙트 간의 Loose Coupling을 가능하게 하는 핵심 도구
+
+## Exception Handling
+
+### 1. Assert
+- 개발자 자신의 코드에 있는 치명적인 버그를 찾아내기 위한 최후의 안전장치
+- 함수 실행 중 불변 조건(invariant)이 깨졌는지를 확인하기 위해 사용
+- 내부 상태의 일관성과 코드의 무결성을 검증
+- assert의 조건이 false가 되면, EVM은 INVALID Opcode를 실행(해당 트랜잭션에 남아있는 모든 가스가 소모)하고 모든 상태 변경은 원상 복구됨
+- 논리적으로 절대 도달해서는 안 되는 코드 블록에 assert(false)를 넣어 안전장치를 마련
